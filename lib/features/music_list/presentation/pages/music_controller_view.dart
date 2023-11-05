@@ -91,7 +91,6 @@ class _MusicControllerViewState extends State<MusicControllerView> with Automati
                                children: [
                                  Slider(
                                    value: _sliderValue,
-                                   divisions: (widget.bloc.player.duration??Duration(seconds: 0)).inSeconds,
                                    onChanged: (value) {
                                      isSliderChange=true;
                                      position = Duration(seconds: value.toInt());
@@ -103,13 +102,13 @@ class _MusicControllerViewState extends State<MusicControllerView> with Automati
                                      widget.bloc.add(OnSlideMusic(position));
                                    },
                                    min: 0,
-                                   max: (widget.bloc.player.duration??Duration(seconds: 0)).inSeconds
+                                   max: (widget.bloc.player.duration??const Duration(seconds: 0)).inSeconds
                                        .toDouble(),
                                  ),
                                  Row(
                                    mainAxisAlignment:MainAxisAlignment.spaceBetween,
                                    children: [
-                                     Text(formatDuration(position??Duration(seconds: 0))),
+                                     Text(formatDuration(position??const Duration(seconds: 0))),
                                      Text(formatDuration((widget.bloc.player.duration??Duration(seconds: 0)))==0?"-":formatDuration((widget.bloc.player.duration??Duration(seconds: 0))))
                                    ],
                                  )

@@ -32,10 +32,8 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       }
       if (event is OnPauseMusic) {
         try {
-          add(OnListen());
-          print("playing ${player.playing}");
+          playerStateSub.pause();
           player.pause();
-          print(player.duration);
           emit(OnMusicPaused(isPlaying: false));
           print("music paused");
         } catch (e) {
@@ -44,6 +42,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       }
       if (event is OnResumeMusic) {
         try {
+          playerStateSub.resume();
           player.play();
           emit(OnMusicResumed());
           print("music resumed");
@@ -72,15 +71,13 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       }
       if (event is OnListen) {
       playerStateSub=  player.playerStateStream.listen((state)async {
-          print("listening");
+        print("sdsds");
           if(state.playing){
-
+            print("listening");
             switch (state.processingState) {
               case ProcessingState.completed:
                 add(OnStopMusic());
-                print("music finish");
               case ProcessingState.ready:
-                print("music ready");
               default:
                 print(state);
             }
