@@ -19,7 +19,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
         try {
           add(OnListen());
           await player.setUrl(
-              "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview123/v4/ac/2b/54/ac2b5458-02e9-206b-e0f0-cc06f44e59a3/mzaf_5940701668146496946.std.aac.p.m4a");
+              "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/27/39/18/27391889-acec-5c7d-feae-10b77f420ee6/mzaf_7325735014632280538.plus.aac.p.m4a");
           print("playing ${player.playing}");
           player.play();
 
@@ -32,6 +32,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       }
       if (event is OnPauseMusic) {
         try {
+          add(OnListen());
           print("playing ${player.playing}");
           player.pause();
           print(player.duration);
@@ -56,6 +57,15 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           playerStateSub.cancel();
           emit(OnMusicStop());
           print("music stop");
+        } catch (e) {
+          throw e;
+        }
+      }
+      if(event is OnSlideMusic){
+        try {
+          player.seek(event.position);
+          add(OnResumeMusic());
+          print("music resumed");
         } catch (e) {
           throw e;
         }

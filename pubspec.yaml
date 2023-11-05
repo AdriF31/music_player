@@ -23,6 +23,7 @@ dependencies:
   rxdart: ^0.27.7
   just_audio: ^0.9.35
   fluentui_system_icons: ^1.1.221
+  intl: ^0.18.1
 
 
 dev_dependencies:

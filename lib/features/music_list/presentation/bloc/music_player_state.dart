@@ -17,4 +17,8 @@ class OnMusicPaused extends MusicPlayerState{
 
 class OnMusicResumed extends MusicPlayerState{}
 
+class OnMusicSeek extends MusicPlayerState{
+
+}
+
 class OnMusicStop extends MusicPlayerState{}
