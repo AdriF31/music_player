@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:meta/meta.dart';
@@ -12,16 +13,21 @@ part 'music_player_state.dart';
 class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
   AudioPlayer player = AudioPlayer();
   var playerStateSub;
+  int? currentSongIndex;
+  bool? isPlaying=false;
   MusicPlayerBloc() : super(MusicPlayerInitial()) {
 
     on<MusicPlayerEvent>((event, emit) async {
       if (event is OnPlayMusic) {
         try {
+
+            currentSongIndex=event.index;
+
           add(OnListen());
-          await player.setUrl(
-              "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/27/39/18/27391889-acec-5c7d-feae-10b77f420ee6/mzaf_7325735014632280538.plus.aac.p.m4a");
-          print("playing ${player.playing}");
+          await player.setUrl(event.musicUrl??"");
+              print("playing ${player.playing}");
           player.play();
+
 
           // player.seek(Duration(minutes: 4,seconds: 50));
           emit(OnMusicPlayed(isPlaying: true));
@@ -44,7 +50,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
         try {
           playerStateSub.resume();
           player.play();
-          emit(OnMusicResumed());
+          emit(OnMusicResumed(isPlaying: true));
           print("music resumed");
         } catch (e) {
           throw e;
@@ -54,7 +60,8 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
         try {
           player.stop();
           playerStateSub.cancel();
-          emit(OnMusicStop());
+          isPlaying=false;
+          emit(OnMusicStop(isPlaying: false));
           print("music stop");
         } catch (e) {
           throw e;
@@ -78,6 +85,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
               case ProcessingState.completed:
                 add(OnStopMusic());
               case ProcessingState.ready:
+                isPlaying=true;
               default:
                 print(state);
             }

@@ -3,14 +3,15 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:music_player/features/music_list/presentation/bloc/music_player_bloc.dart';
+import 'package:music_player/features/music_list/presentation/bloc/music_player/music_player_bloc.dart';
+import 'package:music_player/features/music_list/presentation/dto/music_dto.dart';
 import 'package:music_player/utils/style/colors.dart';
 
 class MusicControllerView extends StatefulWidget{
-  const MusicControllerView({super.key, required this.bloc});
+  const MusicControllerView({super.key, required this.bloc,this.dto});
 
   final MusicPlayerBloc bloc;
-
+final MusicDTO? dto;
   @override
   State<MusicControllerView> createState() => _MusicControllerViewState();
 }
@@ -23,6 +24,14 @@ class _MusicControllerViewState extends State<MusicControllerView> with Automati
   Duration? position ;
 
   // String formattedDuration = formatDuration(duration);
+
+  @override
+  void initState() {
+    if(widget.bloc.currentSongIndex!=widget.dto?.index){
+      widget.bloc.add(OnPlayMusic(musicUrl: widget.dto?.musicUrl,index: widget.dto?.index));
+    }
+    super.initState();
+  }
 
   String formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
@@ -49,8 +58,7 @@ class _MusicControllerViewState extends State<MusicControllerView> with Automati
               borderRadius: BorderRadius.circular(24),
               child: CachedNetworkImage(
                 imageUrl:
-                    "https://static.wikia.nocookie.net/blinks/images/0/07/The_Album_Version_4_Album_Cover.png/revision/latest?cb=20200903175351",
-                fit: BoxFit.cover,
+                   widget.dto?.image??"https://",fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.width,
               ),
@@ -58,14 +66,14 @@ class _MusicControllerViewState extends State<MusicControllerView> with Automati
             SizedBox(
               height: 24,
             ),
-            Text("Playing With Fire",style: TextStyle(
+            Text(widget.dto?.title??"",style: TextStyle(
                 fontFamily: 'gilroy',
                 fontSize: 24,
                 fontWeight: FontWeight.bold),),
             SizedBox(
               height: 8,
             ),
-            Text("BlackPink",style: TextStyle(
+            Text(widget.dto?.artist??"",style: TextStyle(
                 fontFamily: 'gilroy',
                 fontSize: 16,
                 fontWeight: FontWeight.bold),),
@@ -142,7 +150,7 @@ class _MusicControllerViewState extends State<MusicControllerView> with Automati
                                             widget.bloc.add(OnResumeMusic());
                                           }
                                         : () {
-                                            widget.bloc.add(OnPlayMusic());
+                                            widget.bloc.add(OnPlayMusic(musicUrl: widget.dto?.musicUrl,index: widget.dto?.index));
                                           },
                             icon: Icon(
                                 state is OnMusicPlayed || state is OnMusicResumed

@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:music_player/features/music_list/presentation/pages/music_page.dart';
+import 'package:music_player/features/music_list/presentation/pages/music/music_page.dart';
 import 'package:music_player/utils/style/theme.dart';
 
 class App extends StatelessWidget {

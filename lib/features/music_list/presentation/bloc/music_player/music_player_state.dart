@@ -15,10 +15,17 @@ class OnMusicPaused extends MusicPlayerState{
   OnMusicPaused({this.isPlaying});
 }
 
-class OnMusicResumed extends MusicPlayerState{}
+class OnMusicResumed extends MusicPlayerState{
+  bool? isPlaying;
+  OnMusicResumed({this.isPlaying});
+}
+
 
 class OnMusicSeek extends MusicPlayerState{
 
 }
 
-class OnMusicStop extends MusicPlayerState{}
+class OnMusicStop extends MusicPlayerState{
+  bool? isPlaying;
+  OnMusicStop({this.isPlaying});
+}
