@@ -9,7 +9,6 @@ import 'package:music_player/features/music_list/presentation/bloc/music_player/
 import 'package:music_player/features/music_list/presentation/dto/music_dto.dart';
 import 'package:music_player/features/music_list/presentation/pages/music_controller/music_controller_page.dart';
 import 'package:music_player/utils/style/colors.dart';
-import 'package:just_audio/just_audio.dart';
 
 class MusicView extends StatelessWidget {
   const MusicView({super.key});
@@ -67,7 +66,7 @@ class MusicView extends StatelessWidget {
                               if (state.data?.results?[index].previewUrl !=
                               null&&index !=
                                   (state.data?.results?.length ?? 0) - 1)
-                                Divider(
+                                const Divider(
                                   thickness: 2,
                                   color: dividerColor,
                                 )
@@ -116,6 +115,7 @@ class MusicView extends StatelessWidget {
       decoration: InputDecoration(
           fillColor: greyColor,
           filled: true,
+          hintText: "Search your song...",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
             borderSide: const BorderSide(color: greyColor),
@@ -134,8 +134,8 @@ class MusicView extends StatelessWidget {
           )),
       onChanged: (value) {
         if (debounce?.isActive ?? false) debounce?.cancel();
-        debounce = Timer(Duration(seconds: 1), () {
-          if (value.isNotEmpty && value.length > 5) {
+        debounce = Timer(const Duration(seconds: 1), () {
+          if (value.isNotEmpty && value.length > 2) {
             context!.read<MusicBloc>().add(OnMusicSearched(term: value));
           }
         });
@@ -192,8 +192,8 @@ class MusicView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title ?? "",
-                        style: TextStyle(
+                        title ?? "-",
+                        style: const TextStyle(
                             fontFamily: 'gilroy',
                             fontSize: 16,
                             fontWeight: FontWeight.bold),
@@ -202,24 +202,13 @@ class MusicView extends StatelessWidget {
                       const SizedBox(
                         height: 8,
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(FluentIcons.music_note_1_20_regular),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Expanded(
-                            child: Text(
-                              singer ?? "-",
-                              style: TextStyle(
-                                  fontFamily: 'gilroy',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        singer ?? "-",
+                        style: const TextStyle(
+                            fontFamily: 'gilroy',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
                       )
                     ],
                   ),
