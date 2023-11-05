@@ -15,7 +15,7 @@ class MusicRepositoryImpl implements MusicRepository {
   Future<Either<Failure, MusicEntity>> searchMusic(String? term) async {
     try {
       dio.interceptors.add(LogInterceptor(request: true,responseBody: true));
-      var res = await dio.get(baseUrl, queryParameters: {"term": term});
+      var res = await dio.get(baseUrl, queryParameters: {"term": term,"limit":20,"entity":"song"});
       if (res.statusCode == 200) {
         var data = MusicModel.fromJson(jsonDecode(res.data));
         return Right(data);
