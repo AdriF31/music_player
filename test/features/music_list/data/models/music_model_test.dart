@@ -63,10 +63,7 @@ void main(){
         }
       ]
     };
-
     expect(result, equals(expectedJsonMap));
-
-
 
   });
 }
