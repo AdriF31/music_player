@@ -53,6 +53,7 @@ class _MusicControllerViewState extends State<MusicControllerView>
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        centerTitle: true,
         title: Text("Now Playing"),
       ),
       body: BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
@@ -60,170 +61,172 @@ class _MusicControllerViewState extends State<MusicControllerView>
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: CachedNetworkImage(
-                    imageUrl: widget
-                            .music
-                            ?.results?[widget.bloc.currentSongIndex ?? 0]
-                            .image ??
-                        "https://",
-                    fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.width,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: CachedNetworkImage(
+                      imageUrl: widget
+                              .music
+                              ?.results?[widget.bloc.currentSongIndex ?? 0]
+                              .image ??
+                          "https://",
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-                Text(
-                  widget.music?.results?[widget.bloc.currentSongIndex ?? 0]
-                          .trackName ??
-                      "",
-                  style: TextStyle(
-                      fontFamily: 'gilroy',
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  widget.music?.results?[widget.bloc.currentSongIndex ?? 0]
-                          .artistName ??
-                      "",
-                  style: TextStyle(
-                      fontFamily: 'gilroy',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-                BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
-                  bloc: widget.bloc,
-                  builder: (context, state) {
-                    return Column(
-                      children: [
-                        StreamBuilder(
-                            stream: widget.bloc.player.positionStream,
-                            builder: (context, snapshot) {
-                              print(snapshot.connectionState);
-                              if (snapshot.connectionState ==
-                                  ConnectionState.active) {
-                                if (snapshot.hasData) {
-                                  print("has data : ${snapshot.data}");
-                                  position = snapshot.data;
-                                  _sliderValue =
-                                      (position ?? Duration(seconds: 0))
-                                          .inSeconds
-                                          .toDouble();
-                                  print(_sliderValue);
-                                  return Column(
-                                    children: [
-                                      Slider(
-                                        value: _sliderValue,
-                                        onChanged: (value) {
-                                          isSliderChange = true;
-                                          position =
-                                              Duration(seconds: value.toInt());
-                                          widget.bloc.add(OnPauseMusic());
-                                        },
-                                        onChangeEnd: (value) {
-                                          position =
-                                              Duration(seconds: value.toInt());
-                                          // widget.bloc.player.seek(position);
-                                          widget.bloc
-                                              .add(OnSlideMusic(position));
-                                        },
-                                        min: 0,
-                                        max: (widget.bloc.player.duration ??
-                                                const Duration(seconds: 0))
+                  SizedBox(
+                    height: 24,
+                  ),
+                  Text(
+                    widget.music?.results?[widget.bloc.currentSongIndex ?? 0]
+                            .trackName ??
+                        "",
+                    style: TextStyle(
+                        fontFamily: 'gilroy',
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    widget.music?.results?[widget.bloc.currentSongIndex ?? 0]
+                            .artistName ??
+                        "",
+                    style: TextStyle(
+                        fontFamily: 'gilroy',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 24,
+                  ),
+                  BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
+                    bloc: widget.bloc,
+                    builder: (context, state) {
+                      return Column(
+                        children: [
+                          StreamBuilder(
+                              stream: widget.bloc.player.positionStream,
+                              builder: (context, snapshot) {
+                                print(snapshot.connectionState);
+                                if (snapshot.connectionState ==
+                                    ConnectionState.active) {
+                                  if (snapshot.hasData) {
+                                    print("has data : ${snapshot.data}");
+                                    position = snapshot.data;
+                                    _sliderValue =
+                                        (position ?? Duration(seconds: 0))
                                             .inSeconds
-                                            .toDouble(),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(formatDuration(position ??
-                                              const Duration(seconds: 0))),
-                                          Text(formatDuration((widget.bloc
-                                                          .player.duration ??
-                                                      Duration(seconds: 0))) ==
-                                                  0
-                                              ? "-"
-                                              : formatDuration((widget
-                                                      .bloc.player.duration ??
-                                                  Duration(seconds: 0))))
-                                        ],
-                                      )
-                                    ],
-                                  );
-                                } else {
-                                  return Slider(
-                                    value: 0,
-                                    onChanged: (value) {},
-                                  );
-                                }
-                              }
-                              return Slider(
-                                value: 0,
-                                onChanged: (value) {},
-                              );
-                            }),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  widget.bloc.add(OnPreviousMusic());
-                                },
-                                icon: Icon(FluentIcons.previous_24_filled)),
-                            IconButton(
-                                onPressed: state is OnMusicPlayed &&
-                                        state.isPlaying!
-                                    ? () async {
-                                        widget.bloc.add(OnPauseMusic());
-                                      }
-                                    : state is OnMusicPlayed &&
-                                            state.isPlaying == false
-                                        ? () {
-                                            widget.bloc.add(OnResumeMusic());
-                                          }
-                                        : () {
-                                            widget.bloc.add(OnPlayMusic(
-                                                musicUrl: widget
-                                                    .music
-                                                    ?.results?[widget.bloc
-                                                            .currentSongIndex ??
-                                                        0]
-                                                    .previewUrl,
-                                                index: widget
-                                                    .bloc.currentSongIndex));
+                                            .toDouble();
+                                    print(_sliderValue);
+                                    return Column(
+                                      children: [
+                                        Slider(
+                                          value: _sliderValue,
+                                          onChanged: (value) {
+                                            isSliderChange = true;
+                                            position =
+                                                Duration(seconds: value.toInt());
+                                            widget.bloc.add(OnPauseMusic());
                                           },
-                                icon: Icon(
-                                    (state is OnMusicPlayed && state.isPlaying!)
-                                        ? FluentIcons.pause_24_filled
-                                        : state is OnMusicStop
-                                            ? FluentIcons.play_24_filled
-                                            : FluentIcons.play_24_filled)),
-                            IconButton(
-                                onPressed: () {
-                                  widget.bloc.add(OnNextMusic());
-                                },
-                                icon: Icon(FluentIcons.next_24_filled)),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                                          onChangeEnd: (value) {
+                                            position =
+                                                Duration(seconds: value.toInt());
+                                            // widget.bloc.player.seek(position);
+                                            widget.bloc
+                                                .add(OnSlideMusic(position));
+                                          },
+                                          min: 0,
+                                          max: (widget.bloc.player.duration ??
+                                                  const Duration(seconds: 0))
+                                              .inSeconds
+                                              .toDouble(),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(formatDuration(position ??
+                                                const Duration(seconds: 0))),
+                                            Text(formatDuration((widget.bloc
+                                                            .player.duration ??
+                                                        Duration(seconds: 0))) ==
+                                                    0
+                                                ? "-"
+                                                : formatDuration((widget
+                                                        .bloc.player.duration ??
+                                                    Duration(seconds: 0))))
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  } else {
+                                    return Slider(
+                                      value: 0,
+                                      onChanged: (value) {},
+                                    );
+                                  }
+                                }
+                                return Slider(
+                                  value: 0,
+                                  onChanged: (value) {},
+                                );
+                              }),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    widget.bloc.add(OnPreviousMusic());
+                                  },
+                                  icon: Icon(FluentIcons.previous_24_filled)),
+                              IconButton(
+                                  onPressed: state is OnMusicPlayed &&
+                                          state.isPlaying!
+                                      ? () async {
+                                          widget.bloc.add(OnPauseMusic());
+                                        }
+                                      : state is OnMusicPlayed &&
+                                              state.isPlaying == false
+                                          ? () {
+                                              widget.bloc.add(OnResumeMusic());
+                                            }
+                                          : () {
+                                              widget.bloc.add(OnPlayMusic(
+                                                  musicUrl: widget
+                                                      .music
+                                                      ?.results?[widget.bloc
+                                                              .currentSongIndex ??
+                                                          0]
+                                                      .previewUrl,
+                                                  index: widget
+                                                      .bloc.currentSongIndex));
+                                            },
+                                  icon: Icon(
+                                      (state is OnMusicPlayed && state.isPlaying!)
+                                          ? FluentIcons.pause_24_filled
+                                          : state is OnMusicStop
+                                              ? FluentIcons.play_24_filled
+                                              : FluentIcons.play_24_filled)),
+                              IconButton(
+                                  onPressed: () {
+                                    widget.bloc.add(OnNextMusic());
+                                  },
+                                  icon: Icon(FluentIcons.next_24_filled)),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         },

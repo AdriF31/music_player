@@ -57,7 +57,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           if((currentSongIndex!+1)==musicLength){
             add(OnIndexChanged(index: currentSongIndex));
            await player.seek(player.duration!);
-           add(OnStopMusic());
+           add(OnPauseMusic());
           }else{
             add(OnIndexChanged(index: currentSongIndex!+1));
             await player.seekToNext();
@@ -138,7 +138,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
             print("listening");
             switch (state.processingState) {
               case ProcessingState.completed:
-                add(OnNextMusic());
+                add(OnStopMusic());
               case ProcessingState.ready:
                 isPlaying = true;
               default:
