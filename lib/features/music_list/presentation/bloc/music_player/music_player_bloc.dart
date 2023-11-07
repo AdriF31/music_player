@@ -14,6 +14,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
   var playerStateSub;
   int? currentSongIndex;
   bool? isPlaying = false;
+  int? musicLength;
 
   // Define the playlist
   ConcatenatingAudioSource? playlist;
@@ -29,6 +30,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           // Specify the playlist items
           children: event.musicList ?? [],
         );
+        musicLength=event.musicList?.length;
         emit(OnMusicLoad(message: "music loaded"));
       }
       if (event is OnPlayMusic) {
@@ -51,8 +53,17 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       if(event is OnNextMusic){
         try {
           print("playing ${player.playing}");
-          add(OnIndexChanged(index: currentSongIndex!+1));
-          await player.seekToNext();
+
+          if((currentSongIndex!+1)==musicLength){
+            add(OnIndexChanged(index: currentSongIndex));
+           await player.seek(player.duration!);
+           add(OnStopMusic());
+          }else{
+            add(OnIndexChanged(index: currentSongIndex!+1));
+            await player.seekToNext();
+          }
+
+
           player.play();
           // player.seek(Duration(minutes: 4,seconds: 50));
           emit(OnMusicPlayed(isPlaying: true,currentSongIndex: currentSongIndex));
@@ -65,8 +76,13 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
         try {
           print("playing ${player.playing}");
 
-          add(OnIndexChanged(index: currentSongIndex!-1));
-          await player.seekToPrevious();
+          if(currentSongIndex==0){
+            add(OnIndexChanged(index: currentSongIndex!));
+           await player.seek(Duration(seconds: 0));
+          }else{
+            add(OnIndexChanged(index: currentSongIndex!-1));
+            await player.seekToPrevious();
+          }
           player.play();
           // player.seek(Duration(minutes: 4,seconds: 50));
           emit(OnMusicPlayed(isPlaying: true,currentSongIndex: currentSongIndex));
@@ -122,12 +138,17 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
             print("listening");
             switch (state.processingState) {
               case ProcessingState.completed:
-                add(OnStopMusic());
+                add(OnNextMusic());
               case ProcessingState.ready:
                 isPlaying = true;
               default:
                 print(state);
             }
+          }
+        });
+        player.positionStream.listen((event) {
+          if(event==player.duration){
+            add(OnNextMusic());
           }
         });
       }

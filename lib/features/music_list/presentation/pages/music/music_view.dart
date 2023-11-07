@@ -67,13 +67,11 @@ class MusicView extends StatelessWidget {
                     },
                     child: Container(
                       padding: const EdgeInsets.all(16),
-                      height: 100,
+                      height: 120,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           color: Colors.black,
-                          boxShadow: [BoxShadow(
-                              color: greyColor
-                          )]
+                          border: BorderDirectional(top: BorderSide(width: 1,color: greyColor))
                       ),
                       child: Row(
                         children: [
@@ -115,7 +113,7 @@ class MusicView extends StatelessWidget {
                                           .artistName ??
                                           "", style: const TextStyle(
                                           fontFamily: 'gilroy',
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold),
                                         overflow: TextOverflow.ellipsis,)
                                     ],
@@ -213,9 +211,13 @@ class MusicView extends StatelessWidget {
                                       (state.data?.results?.length ?? 0) -
                                           1)
                                 const Divider(
-                                  thickness: 2,
+                                  thickness: 1,
                                   color: dividerColor,
-                                )
+                                ),
+                              if(index ==
+                              (state.data?.results?.length ?? 0) -
+                              1)
+                                SizedBox(height: 130,)
                             ],
                           );
                         })),
