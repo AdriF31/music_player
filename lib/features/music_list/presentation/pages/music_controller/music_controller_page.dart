@@ -7,7 +7,7 @@ import 'package:music_player/features/music_list/presentation/pages/music_contro
 
 class MusicControllerPage extends StatelessWidget {
   const MusicControllerPage({super.key, required this.bloc,this.dto,this.music});
-  final MusicEntity? music;
+  final List<ResultEntity>? music;
   final MusicPlayerBloc bloc;
   final MusicDTO? dto;
 

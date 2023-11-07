@@ -18,6 +18,7 @@ class MusicBloc extends Bloc<MusicEvent, MusicState> {
 
 
   List<AudioSource>? musicList = [];
+  List<ResultEntity>? music=[];
   MusicBloc() : super(MusicInitial()) {
     on<MusicEvent>((event, emit) async {
       if (event is OnMusicSearched) {
@@ -26,6 +27,7 @@ class MusicBloc extends Bloc<MusicEvent, MusicState> {
           var data = await musicRepository.searchMusic(event.term);
           data.fold((l) => emit(OnErrorGetMusic()),
               (r) {
+            musicList?.clear();
                 r.results?.forEach((element) {
                   if(element.previewUrl!=null){
                     musicList?.add(AudioSource.uri(Uri.parse(element.previewUrl??"")));
