@@ -187,8 +187,15 @@ class _MusicControllerViewState extends State<MusicControllerView>
                                   children: [
                                     IconButton(
                                         onPressed: () {
-                                          widget.bloc.add(OnPreviousMusic());
-                                        },
+                                          widget.bloc.currentSongIndex == 0
+                                              ? widget.bloc.add(OnPreviousMusic(
+                                              currentMusic: widget.music?[
+                                              widget.bloc.currentSongIndex!]))
+                                              : widget.bloc.add(OnPreviousMusic(
+                                              currentMusic: widget.music?[
+                                              widget.bloc.currentSongIndex! -
+                                                  1]));
+                                          },
                                         icon: Icon(FluentIcons.previous_24_filled)),
                                     IconButton(
                                         onPressed: state is OnMusicPlayed &&
@@ -216,10 +223,17 @@ class _MusicControllerViewState extends State<MusicControllerView>
                                                 ? FluentIcons.play_24_filled
                                                 : FluentIcons.play_24_filled)),
                                     IconButton(
-                                        onPressed: () {
-                                          widget.bloc.add(OnNextMusic());
-                                        },
-                                        icon: Icon(FluentIcons.next_24_filled)),
+                                        onPressed:widget.bloc.currentSongIndex !=
+                                            (widget.music?.length ?? 0) - 1
+                                            ?  () {
+                                          widget.bloc.add(OnNextMusic(currentMusic: widget.music?[widget.bloc.currentSongIndex!+1]));
+                                        }:(){},
+                                        icon: Icon(FluentIcons.next_24_filled,color: widget.bloc.currentSongIndex !=
+                                            (widget.music?.length ?? 0) - 1
+                                            ?IconTheme.of(context).color
+                                            : IconTheme.of(context)
+                                            .color
+                                            ?.withOpacity(0.5),)),
                                   ],
                                 ),
                               ],

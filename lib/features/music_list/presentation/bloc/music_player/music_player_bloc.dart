@@ -81,9 +81,11 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           print("playing ${player.playing}");
           await player.setAudioSource(playlist!,initialIndex: currentSongIndex, initialPosition: Duration.zero);
           if(currentSongIndex==0){
+            print("its first song");
             add(OnIndexChanged(index: currentSongIndex!,currentMusic:event.currentMusic ));
            await player.seek(Duration(seconds: 0));
           }else{
+            print("its not song");
             add(OnIndexChanged(index: currentSongIndex!-1,currentMusic: event.currentMusic));
             await player.seekToPrevious();
           }
@@ -120,7 +122,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           player.stop();
           playerStateSub.cancel();
           isPlaying = false;
-          emit(OnMusicStop(isPlaying: false));
+          emit(OnMusicPlayed(isPlaying: false,currentSongIndex: currentSongIndex));
           print("music stop");
         } catch (e) {
           throw e;
@@ -137,7 +139,6 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       }
       if (event is OnListen) {
         playerStateSub = player.playerStateStream.listen((state) async {
-          print("sdsds");
           if (state.playing) {
             print("listening");
             switch (state.processingState) {
@@ -151,7 +152,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           }
         });
         player.positionStream.listen((event) {
-          if(event==player.duration){
+          if(event==player.duration&&currentSongIndex!=(musicList?.length??0)-1){
             add(OnNextMusic());
           }
         });
