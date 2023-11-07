@@ -8,9 +8,9 @@ abstract class MusicPlayerEvent extends Equatable{
 }
 
 class OnPlayMusic extends MusicPlayerEvent{
-  String? musicUrl;
+  ResultEntity? currentMusic;
   int? index;
-  OnPlayMusic({this.musicUrl,this.index});
+  OnPlayMusic({this.currentMusic,this.index});
 }
 class OnLoadMusic extends MusicPlayerEvent{
   List<AudioSource>?musicList;
@@ -19,15 +19,24 @@ class OnLoadMusic extends MusicPlayerEvent{
 class OnPauseMusic extends MusicPlayerEvent{}
 class OnResumeMusic extends MusicPlayerEvent{}
 class OnStopMusic extends MusicPlayerEvent{}
-class OnNextMusic extends MusicPlayerEvent{}
-class OnPreviousMusic extends MusicPlayerEvent{}
+class OnNextMusic extends MusicPlayerEvent{
+  ResultEntity? currentMusic;
+  OnNextMusic({this.currentMusic});
+}
+class OnPreviousMusic extends MusicPlayerEvent{
+  ResultEntity? currentMusic;
+  OnPreviousMusic({this.currentMusic});
+}
 class OnIndexChanged extends MusicPlayerEvent{
   int? index;
-  OnIndexChanged({this.index});
+  ResultEntity? currentMusic;
+  OnIndexChanged({this.index,this.currentMusic});
 }
 class OnSlideMusic extends MusicPlayerEvent{
   Duration? position;
   OnSlideMusic(this.position);
+}
+class OnPlaylistChange extends MusicPlayerEvent{
 }
 class OnListen extends MusicPlayerEvent{
 

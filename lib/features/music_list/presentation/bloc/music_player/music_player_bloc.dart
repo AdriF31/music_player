@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:meta/meta.dart';
+import 'package:music_player/features/music_list/domain/entities/music_entity.dart';
 
 part 'music_player_event.dart';
 
@@ -15,6 +16,8 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
   int? currentSongIndex;
   bool? isPlaying = false;
   int? musicLength;
+  ResultEntity? currentMusic;
+  List<AudioSource>? musicList = [];
 
   // Define the playlist
   ConcatenatingAudioSource? playlist;
@@ -22,23 +25,24 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
   MusicPlayerBloc() : super(MusicPlayerInitial()) {
     on<MusicPlayerEvent>((event, emit) async {
       if (event is OnLoadMusic) {
+        musicList?.addAll(event.musicList??[]);
         playlist = ConcatenatingAudioSource(
           // Start loading next item just before reaching it
           useLazyPreparation: true,
           // Customise the shuffle algorithm
           shuffleOrder: DefaultShuffleOrder(),
           // Specify the playlist items
-          children: event.musicList ?? [],
+          children: musicList ?? [],
         );
-        musicLength=event.musicList?.length;
-        emit(OnMusicLoad(message: "music loaded"));
+        musicLength=musicList?.length;
       }
       if (event is OnPlayMusic) {
         try {
-          add(OnIndexChanged(index: event.index));
+          add(OnIndexChanged(index: event.index,currentMusic: event.currentMusic));
           add(OnListen());
           await player.setAudioSource(playlist!,
               initialIndex: event.index, initialPosition: Duration.zero);
+          print(playlist?.length);
           // await player.setUrl(event.musicUrl ?? "");
           print("playing ${player.playing}");
           player.play();
@@ -53,13 +57,13 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       if(event is OnNextMusic){
         try {
           print("playing ${player.playing}");
-
+          await player.setAudioSource(playlist!,initialIndex: currentSongIndex, initialPosition: Duration.zero);
           if((currentSongIndex!+1)==musicLength){
-            add(OnIndexChanged(index: currentSongIndex));
+            add(OnIndexChanged(index: currentSongIndex,currentMusic: event.currentMusic));
            await player.seek(player.duration!);
            add(OnPauseMusic());
           }else{
-            add(OnIndexChanged(index: currentSongIndex!+1));
+            add(OnIndexChanged(index: currentSongIndex!+1,currentMusic: event.currentMusic));
             await player.seekToNext();
           }
 
@@ -75,12 +79,12 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       if(event is OnPreviousMusic){
         try {
           print("playing ${player.playing}");
-
+          await player.setAudioSource(playlist!,initialIndex: currentSongIndex, initialPosition: Duration.zero);
           if(currentSongIndex==0){
-            add(OnIndexChanged(index: currentSongIndex!));
+            add(OnIndexChanged(index: currentSongIndex!,currentMusic:event.currentMusic ));
            await player.seek(Duration(seconds: 0));
           }else{
-            add(OnIndexChanged(index: currentSongIndex!-1));
+            add(OnIndexChanged(index: currentSongIndex!-1,currentMusic: event.currentMusic));
             await player.seekToPrevious();
           }
           player.play();
@@ -154,6 +158,11 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
       }
       if(event is OnIndexChanged){
         currentSongIndex=event.index;
+        currentMusic=event.currentMusic;
+           }
+      if(event is OnPlaylistChange){
+        musicList?.clear();
+        musicList?.insert(0,AudioSource.uri(Uri.parse(currentMusic?.previewUrl??"")));
       }
     });
   }
