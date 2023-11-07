@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 class MusicEntity extends Equatable {
@@ -45,7 +44,6 @@ class ResultEntity extends Equatable{
   });
 
  @override
-  // TODO: implement props
   List<Object?> get props => [   artistName,
    image,
    collectionExplicitness,

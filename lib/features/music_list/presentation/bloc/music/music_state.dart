@@ -13,7 +13,8 @@ class OnLoadingGetMusic extends MusicState{}
 
 class OnSuccessGetMusic extends MusicState{
   MusicEntity? data;
-  OnSuccessGetMusic({this.data});
+  List<AudioSource>? musicList;
+  OnSuccessGetMusic({this.data,this.musicList});
 }
 
 class OnErrorGetMusic extends MusicState{}

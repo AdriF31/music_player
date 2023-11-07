@@ -12,9 +12,19 @@ class OnPlayMusic extends MusicPlayerEvent{
   int? index;
   OnPlayMusic({this.musicUrl,this.index});
 }
+class OnLoadMusic extends MusicPlayerEvent{
+  List<AudioSource>?musicList;
+  OnLoadMusic({this.musicList});
+}
 class OnPauseMusic extends MusicPlayerEvent{}
 class OnResumeMusic extends MusicPlayerEvent{}
 class OnStopMusic extends MusicPlayerEvent{}
+class OnNextMusic extends MusicPlayerEvent{}
+class OnPreviousMusic extends MusicPlayerEvent{}
+class OnIndexChanged extends MusicPlayerEvent{
+  int? index;
+  OnIndexChanged({this.index});
+}
 class OnSlideMusic extends MusicPlayerEvent{
   Duration? position;
   OnSlideMusic(this.position);
