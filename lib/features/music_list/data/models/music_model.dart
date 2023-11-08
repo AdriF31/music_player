@@ -12,7 +12,9 @@ MusicModel musicModelFromJson(String str) =>
 String musicModelToJson(MusicModel data) => json.encode(data.toJson());
 
 class MusicModel extends MusicEntity {
+  @override
   final int? resultCount;
+  @override
   final List<Result>? results;
 
   const MusicModel({
@@ -37,19 +39,33 @@ class MusicModel extends MusicEntity {
 }
 
 class Result extends ResultEntity {
+  @override
   final String? artistName;
+  @override
   final String? image;
+  @override
   final String? collectionExplicitness;
+  @override
   final int? trackCount;
+  @override
   final String? copyright;
+  @override
   final String? country;
+  @override
   final String? primaryGenreName;
+  @override
   final String? previewUrl;
+  @override
   final String? description;
+  @override
   final String? kind;
+  @override
   final int? trackId;
+  @override
   final String? trackName;
+  @override
   final String? trackViewUrl;
+  @override
   final bool? isStreamable;
 
   const Result({

@@ -2,11 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:music_player/features/music_list/domain/entities/music_entity.dart';
 import 'package:music_player/features/music_list/presentation/bloc/music_player/music_player_bloc.dart';
 import 'package:music_player/features/music_list/presentation/dto/music_dto.dart';
-import 'package:music_player/utils/style/colors.dart';
 
 class MusicControllerView extends StatefulWidget {
   const MusicControllerView(
@@ -54,7 +52,7 @@ class _MusicControllerViewState extends State<MusicControllerView>
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text("Now Playing"),
+        title: const Text("Now Playing"),
       ),
       body: BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
         bloc: widget.bloc,
@@ -79,7 +77,7 @@ class _MusicControllerViewState extends State<MusicControllerView>
                       height: MediaQuery.of(context).size.width,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 24,
                   ),
                   Align(
@@ -90,24 +88,24 @@ class _MusicControllerViewState extends State<MusicControllerView>
                           widget.music?[widget.bloc.currentSongIndex ?? 0]
                               .trackName ??
                               "",
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: 'gilroy',
                               fontSize: 24,
                               fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         Text(
                           widget.music?[widget.bloc.currentSongIndex ?? 0]
                               .artistName ??
                               "",
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: 'gilroy',
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 24,
                         ),
                         BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
@@ -125,7 +123,7 @@ class _MusicControllerViewState extends State<MusicControllerView>
                                           print("has data : ${snapshot.data}");
                                           position = snapshot.data;
                                           _sliderValue =
-                                              (position ?? Duration(seconds: 0))
+                                              (position ?? const Duration(seconds: 0))
                                                   .inSeconds
                                                   .toDouble();
                                           print(_sliderValue);
@@ -160,12 +158,12 @@ class _MusicControllerViewState extends State<MusicControllerView>
                                                       const Duration(seconds: 0))),
                                                   Text(formatDuration((widget.bloc
                                                       .player.duration ??
-                                                      Duration(seconds: 0))) ==
+                                                      const Duration(seconds: 0))) ==
                                                       0
                                                       ? "-"
                                                       : formatDuration((widget
                                                       .bloc.player.duration ??
-                                                      Duration(seconds: 0))))
+                                                      const Duration(seconds: 0))))
                                                 ],
                                               )
                                             ],
@@ -196,7 +194,7 @@ class _MusicControllerViewState extends State<MusicControllerView>
                                               widget.bloc.currentSongIndex! -
                                                   1]));
                                           },
-                                        icon: Icon(FluentIcons.previous_24_filled)),
+                                        icon: const Icon(FluentIcons.previous_24_filled)),
                                     IconButton(
                                         onPressed: state is OnMusicPlayed &&
                                             state.isPlaying!

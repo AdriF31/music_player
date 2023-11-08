@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
@@ -18,207 +17,205 @@ class MusicView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
-    Timer? _debounce;
+    Timer? debounce;
     MusicPlayerBloc bloc = MusicPlayerBloc();
     Duration? position;
-    double _sliderValue;
+    double sliderValue;
     List<ResultEntity>? music = [];
     return Scaffold(
-      floatingActionButton: BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
         bloc: bloc,
         builder: (context, s) {
-          print("bangsat" + s.toString());
+          print("bangsat$s");
           if (s is OnMusicPlayed) {
-            return SafeArea(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MusicControllerPage(
-                                bloc: bloc,
-                                music: music,
-                                dto: MusicDTO(
-                                    index: bloc.currentSongIndex,
-                                    title: music[s.currentSongIndex ?? 0]
-                                        .trackName,
-                                    image: music[s.currentSongIndex ?? 0].image,
-                                    artist: music[s.currentSongIndex ?? 0]
-                                        .artistName,
-                                    musicUrl: music[s.currentSongIndex ?? 0]
-                                        .previewUrl),
-                              )));
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8)),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    height: 140,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: greyColor,
-                        border: BorderDirectional(
-                            top: BorderSide(width: 1, color: greyColor))),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: music[s.currentSongIndex ?? 0].image ??
-                                "https://",
-                            width: 80,
-                            height: 80,
-                          ),
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MusicControllerPage(
+                              bloc: bloc,
+                              music: music,
+                              dto: MusicDTO(
+                                  index: bloc.currentSongIndex,
+                                  title: music[s.currentSongIndex ?? 0]
+                                      .trackName,
+                                  image: music[s.currentSongIndex ?? 0].image,
+                                  artist: music[s.currentSongIndex ?? 0]
+                                      .artistName,
+                                  musicUrl: music[s.currentSongIndex ?? 0]
+                                      .previewUrl),
+                            )));
+              },
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8)),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  height: 150,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                      color: greyColor,
+                      border: BorderDirectional(
+                          top: BorderSide(width: 1, color: greyColor))),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: music[s.currentSongIndex ?? 0].image ??
+                              "https://",
+                          width: 80,
+                          height: 80,
                         ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      music[s.currentSongIndex!].trackName ??
-                                          "",
-                                      style: const TextStyle(
-                                          fontFamily: 'gilroy',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    Text(
-                                      music[s.currentSongIndex!].artistName ??
-                                          "",
-                                      style: const TextStyle(
-                                          fontFamily: 'gilroy',
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
-                                    )
-                                  ],
-                                ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    music[s.currentSongIndex!].trackName ??
+                                        "",
+                                    style: const TextStyle(
+                                        fontFamily: 'gilroy',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    music[s.currentSongIndex!].artistName ??
+                                        "",
+                                    style: const TextStyle(
+                                        fontFamily: 'gilroy',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                ],
                               ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                        onPressed: () {
-                                          bloc.currentSongIndex == 0
-                                              ? bloc.add(OnPreviousMusic(
+                            ),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        bloc.currentSongIndex == 0
+                                            ? bloc.add(OnPreviousMusic(
+                                                currentMusic: music[
+                                                    bloc.currentSongIndex!]))
+                                            : bloc.add(OnPreviousMusic(
+                                                currentMusic: music[
+                                                    bloc.currentSongIndex! -
+                                                        1]));
+                                      },
+                                      icon: const Icon(
+                                          FluentIcons.previous_24_filled)),
+                                  IconButton(
+                                      onPressed: () {
+                                        s.isPlaying!
+                                            ? bloc.add(OnPauseMusic())
+                                            : bloc.add(OnResumeMusic());
+                                      },
+                                      icon: Icon((s.isPlaying!)
+                                          ? FluentIcons.pause_24_filled
+                                          : FluentIcons.play_24_filled)),
+                                  IconButton(
+                                      onPressed: bloc.currentSongIndex !=
+                                              (music.length ?? 0) - 1
+                                          ? () {
+                                              bloc.add(OnNextMusic(
                                                   currentMusic: music[
-                                                      bloc.currentSongIndex!]))
-                                              : bloc.add(OnPreviousMusic(
-                                                  currentMusic: music[
-                                                      bloc.currentSongIndex! -
+                                                      bloc.currentSongIndex! +
                                                           1]));
-                                        },
-                                        icon: Icon(
-                                            FluentIcons.previous_24_filled)),
-                                    IconButton(
-                                        onPressed: () {
-                                          s.isPlaying!
-                                              ? bloc.add(OnPauseMusic())
-                                              : bloc.add(OnResumeMusic());
-                                        },
-                                        icon: Icon((s.isPlaying!)
-                                            ? FluentIcons.pause_24_filled
-                                            : FluentIcons.play_24_filled)),
-                                    IconButton(
-                                        onPressed: bloc.currentSongIndex !=
+                                            }
+                                          : () {},
+                                      icon: Icon(
+                                        FluentIcons.next_24_filled,
+                                        color: bloc.currentSongIndex !=
                                                 (music.length ?? 0) - 1
-                                            ? () {
-                                                bloc.add(OnNextMusic(
-                                                    currentMusic: music[
-                                                        bloc.currentSongIndex! +
-                                                            1]));
-                                              }
-                                            : () {},
-                                        icon: Icon(
-                                          FluentIcons.next_24_filled,
-                                          color: bloc.currentSongIndex !=
-                                                  (music.length ?? 0) - 1
-                                              ? IconTheme.of(context).color
-                                              : IconTheme.of(context)
-                                                  .color
-                                                  ?.withOpacity(0.5),
-                                        )),
-                                  ],
-                                ),
+                                            ? IconTheme.of(context).color
+                                            : IconTheme.of(context)
+                                                .color
+                                                ?.withOpacity(0.5),
+                                      )),
+                                ],
                               ),
-                              StreamBuilder(
-                                  stream: bloc.player.positionStream,
-                                  builder: (context, snapshot) {
-                                    print(snapshot.connectionState);
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.active) {
-                                      if (snapshot.hasData) {
-                                        print("has data : ${snapshot.data}");
-                                        position = snapshot.data;
-                                        _sliderValue =
-                                            (position ?? Duration(seconds: 0))
-                                                .inSeconds
-                                                .toDouble();
-                                        print(_sliderValue);
-                                        return Slider(
-                                          value: _sliderValue,
-                                          onChanged: (value) {
-                                            position = Duration(
-                                                seconds: value.toInt());
-                                            bloc.add(OnPauseMusic());
-                                          },
-                                          onChangeEnd: (value) {
-                                            position = Duration(
-                                                seconds: value.toInt());
-                                            // widget.bloc.player.seek(position);
-                                            bloc.add(OnSlideMusic(position));
-                                          },
-                                          min: 0,
-                                          max: (bloc.player.duration ??
-                                                  const Duration(seconds: 0))
+                            ),
+                            StreamBuilder(
+                                stream: bloc.player.positionStream,
+                                builder: (context, snapshot) {
+                                  print(snapshot.connectionState);
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.active) {
+                                    if (snapshot.hasData) {
+                                      print("has data : ${snapshot.data}");
+                                      position = snapshot.data;
+                                      sliderValue =
+                                          (position ?? const Duration(seconds: 0))
                                               .inSeconds
-                                              .toDouble(),
-                                        );
-                                      } else {
-                                        return Slider(
-                                          value: 0,
-                                          onChanged: (value) {},
-                                        );
-                                      }
+                                              .toDouble();
+                                      print(sliderValue);
+                                      return Slider(
+                                        value: sliderValue,
+                                        onChanged: (value) {
+                                          position = Duration(
+                                              seconds: value.toInt());
+                                          bloc.add(OnPauseMusic());
+                                        },
+                                        onChangeEnd: (value) {
+                                          position = Duration(
+                                              seconds: value.toInt());
+                                          // widget.bloc.player.seek(position);
+                                          bloc.add(OnSlideMusic(position));
+                                        },
+                                        min: 0,
+                                        max: (bloc.player.duration ??
+                                                const Duration(seconds: 0))
+                                            .inSeconds
+                                            .toDouble(),
+                                      );
+                                    } else {
+                                      return Slider(
+                                        value: 0,
+                                        onChanged: (value) {},
+                                      );
                                     }
-                                    return Slider(
-                                      value: 0,
-                                      onChanged: (value) {},
-                                    );
-                                  }),
-                            ],
-                          ),
+                                  }
+                                  return Slider(
+                                    value: 0,
+                                    onChanged: (value) {},
+                                  );
+                                }),
+                          ],
                         ),
-                        // IconButton(onPressed: (){}, icon: Icon(FluentIcons.next_24_filled)),
-                      ],
-                    ),
+                      ),
+                      // IconButton(onPressed: (){}, icon: Icon(FluentIcons.next_24_filled)),
+                    ],
                   ),
                 ),
               ),
             );
           }
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Column(
         children: [
           SafeArea(
             child: _buildSearchField(
-                controller: controller, debounce: _debounce, context: context),
+                controller: controller, debounce: debounce, context: context),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -227,7 +224,7 @@ class MusicView extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {},
-                  child: Column(
+                  child: const Column(
                     children: [
                       Icon(FluentIcons.clock_24_filled),
                       SizedBox(
@@ -239,7 +236,7 @@ class MusicView extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {},
-                  child: Column(
+                  child: const Column(
                     children: [
                       Icon(FluentIcons.music_note_1_24_filled),
                       SizedBox(
@@ -251,7 +248,7 @@ class MusicView extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {},
-                  child: Column(
+                  child: const Column(
                     children: [
                       Icon(FluentIcons.heart_24_filled),
                       SizedBox(
@@ -269,7 +266,7 @@ class MusicView extends StatelessWidget {
               if (state is OnSuccessGetMusic) {
                 music.clear();
                 if (bloc.currentMusic != null) {
-                  music.add(bloc.currentMusic ?? ResultEntity());
+                  music.add(bloc.currentMusic ?? const ResultEntity());
                   music.addAll(state.data?.results ?? []);
                   bloc.add(OnPlaylistChange());
                   bloc.add(OnIndexChanged(index: 0, currentMusic: music[0]));
@@ -306,7 +303,7 @@ class MusicView extends StatelessWidget {
                               color: dividerColor,
                             ),
                           if (index == (music.length ?? 0) - 1)
-                            SizedBox(
+                            const SizedBox(
                               height: 150,
                             )
                         ],
@@ -468,31 +465,6 @@ class MusicView extends StatelessWidget {
                     state.isPlaying! &&
                     bloc.currentSongIndex == index)
                   LottieBuilder.asset("assets/lottie/music.json")
-                // IconButton(
-                //     key: key,
-                //     onPressed: (state is OnMusicPlayed&&state.isPlaying!) &&
-                //             bloc.currentSongIndex == index
-                //         ? () async {
-                //             bloc.add(OnPauseMusic());
-                //           }
-                //         : state is OnMusicPlayed&&state.isPlaying==false&&
-                //                 bloc.currentSongIndex == index
-                //             ? () {
-                //                 bloc.add(OnResumeMusic());
-                //               }
-                //             : () {
-                //                 print(musicUrl);
-                //                 print("key: ${bloc.currentSongIndex}");
-                //                 print("index: $index");
-                //                 bloc.add(OnPlayMusic(
-                //                     musicUrl: musicUrl ?? "", index: index));
-                //               },
-                //     icon: Icon((state is OnMusicPlayed&&state.isPlaying!) &&
-                //             bloc.currentSongIndex == index
-                //         ? FluentIcons.pause_24_filled
-                //         : state is OnMusicStop
-                //             ? FluentIcons.play_24_filled
-                //             : FluentIcons.play_24_filled))
               ],
             ),
           ),

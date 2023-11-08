@@ -51,7 +51,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           emit(OnMusicPlayed(isPlaying: true,currentSongIndex:currentSongIndex ));
           print("music played");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if(event is OnNextMusic){
@@ -73,7 +73,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           emit(OnMusicPlayed(isPlaying: true,currentSongIndex: currentSongIndex));
           print("play next music");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if(event is OnPreviousMusic){
@@ -83,7 +83,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           if(currentSongIndex==0){
             print("its first song");
             add(OnIndexChanged(index: currentSongIndex!,currentMusic:event.currentMusic ));
-           await player.seek(Duration(seconds: 0));
+           await player.seek(const Duration(seconds: 0));
           }else{
             print("its not song");
             add(OnIndexChanged(index: currentSongIndex!-1,currentMusic: event.currentMusic));
@@ -94,7 +94,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           emit(OnMusicPlayed(isPlaying: true,currentSongIndex: currentSongIndex));
           print("play previous music");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if (event is OnPauseMusic) {
@@ -104,7 +104,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           emit(OnMusicPlayed(isPlaying: false,currentSongIndex: currentSongIndex));
           print("music paused");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if (event is OnResumeMusic) {
@@ -114,7 +114,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           emit(OnMusicPlayed(isPlaying: true,currentSongIndex: currentSongIndex));
           print("music resumed");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if (event is OnStopMusic) {
@@ -125,7 +125,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           emit(OnMusicPlayed(isPlaying: false,currentSongIndex: currentSongIndex));
           print("music stop");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if (event is OnSlideMusic) {
@@ -134,7 +134,7 @@ class MusicPlayerBloc extends Bloc<MusicPlayerEvent, MusicPlayerState> {
           add(OnResumeMusic());
           print("music resumed");
         } catch (e) {
-          throw e;
+          rethrow;
         }
       }
       if (event is OnListen) {
