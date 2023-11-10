@@ -9,6 +9,7 @@ import 'package:music_player/features/music_list/presentation/bloc/music/music_b
 import 'package:music_player/features/music_list/presentation/bloc/music_player/music_player_bloc.dart';
 import 'package:music_player/features/music_list/presentation/dto/music_dto.dart';
 import 'package:music_player/features/music_list/presentation/pages/music_controller/music_controller_page.dart';
+import 'package:music_player/features/music_list/presentation/widgets/search_field_widget.dart';
 import 'package:music_player/utils/style/colors.dart';
 
 class MusicView extends StatelessWidget {
@@ -17,17 +18,15 @@ class MusicView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
-    Timer? debounce;
     MusicPlayerBloc bloc = MusicPlayerBloc();
     Duration? position;
     double sliderValue;
-    List<ResultEntity>? music = [];
+    // List<ResultEntity>? music = [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BlocBuilder<MusicPlayerBloc, MusicPlayerState>(
         bloc: bloc,
         builder: (context, s) {
-          print("bangsat$s");
           if (s is OnMusicPlayed) {
             return GestureDetector(
               onTap: () {
@@ -36,15 +35,15 @@ class MusicView extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => MusicControllerPage(
                               bloc: bloc,
-                              music: music,
+                              music: bloc.music,
                               dto: MusicDTO(
                                   index: bloc.currentSongIndex,
-                                  title: music[s.currentSongIndex ?? 0]
+                                  title: bloc.music?[s.currentSongIndex ?? 0]
                                       .trackName,
-                                  image: music[s.currentSongIndex ?? 0].image,
-                                  artist: music[s.currentSongIndex ?? 0]
+                                  image: bloc.music?[s.currentSongIndex ?? 0].image,
+                                  artist: bloc.music?[s.currentSongIndex ?? 0]
                                       .artistName,
-                                  musicUrl: music[s.currentSongIndex ?? 0]
+                                  musicUrl: bloc.music?[s.currentSongIndex ?? 0]
                                       .previewUrl),
                             )));
               },
@@ -65,7 +64,7 @@ class MusicView extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: CachedNetworkImage(
-                          imageUrl: music[s.currentSongIndex ?? 0].image ??
+                          imageUrl: bloc.music?[s.currentSongIndex ?? 0].image ??
                               "https://",
                           width: 80,
                           height: 80,
@@ -82,7 +81,7 @@ class MusicView extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    music[s.currentSongIndex!].trackName ??
+                                    bloc.music?[s.currentSongIndex!].trackName ??
                                         "",
                                     style: const TextStyle(
                                         fontFamily: 'gilroy',
@@ -94,7 +93,7 @@ class MusicView extends StatelessWidget {
                                     height: 4,
                                   ),
                                   Text(
-                                    music[s.currentSongIndex!].artistName ??
+                                    bloc.music?[s.currentSongIndex!].artistName ??
                                         "",
                                     style: const TextStyle(
                                         fontFamily: 'gilroy',
@@ -113,10 +112,10 @@ class MusicView extends StatelessWidget {
                                       onPressed: () {
                                         bloc.currentSongIndex == 0
                                             ? bloc.add(OnPreviousMusic(
-                                                currentMusic: music[
+                                                currentMusic: bloc.music?[
                                                     bloc.currentSongIndex!]))
                                             : bloc.add(OnPreviousMusic(
-                                                currentMusic: music[
+                                                currentMusic: bloc.music?[
                                                     bloc.currentSongIndex! -
                                                         1]));
                                       },
@@ -133,10 +132,10 @@ class MusicView extends StatelessWidget {
                                           : FluentIcons.play_24_filled)),
                                   IconButton(
                                       onPressed: bloc.currentSongIndex !=
-                                              (music.length ?? 0) - 1
+                                              (bloc.music?.length ?? 0) - 1
                                           ? () {
                                               bloc.add(OnNextMusic(
-                                                  currentMusic: music[
+                                                  currentMusic: bloc.music?[
                                                       bloc.currentSongIndex! +
                                                           1]));
                                             }
@@ -144,7 +143,7 @@ class MusicView extends StatelessWidget {
                                       icon: Icon(
                                         FluentIcons.next_24_filled,
                                         color: bloc.currentSongIndex !=
-                                                (music.length ?? 0) - 1
+                                                (bloc.music?.length ?? 0) - 1
                                             ? IconTheme.of(context).color
                                             : IconTheme.of(context)
                                                 .color
@@ -214,8 +213,8 @@ class MusicView extends StatelessWidget {
       body: Column(
         children: [
           SafeArea(
-            child: _buildSearchField(
-                controller: controller, debounce: debounce, context: context),
+            child: SearchFieldWidget(
+                controller: controller, ctx: context),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -264,17 +263,17 @@ class MusicView extends StatelessWidget {
           BlocConsumer<MusicBloc, MusicState>(
             listener: (context, state) {
               if (state is OnSuccessGetMusic) {
-                music.clear();
+                bloc.music?.clear();
                 if (bloc.currentMusic != null) {
-                  music.add(bloc.currentMusic ?? const ResultEntity());
-                  music.addAll(state.data?.results ?? []);
+                  bloc.music?.add(bloc.currentMusic ?? const ResultEntity());
+                  bloc.music?.addAll(state.data?.results ?? []);
                   bloc.add(OnPlaylistChange());
-                  bloc.add(OnIndexChanged(index: 0, currentMusic: music[0]));
+                  bloc.add(OnIndexChanged(index: 0, currentMusic: bloc.music?.first));
                   bloc.add(OnLoadMusic(musicList: state.musicList));
                   print("adding ${bloc.currentMusic}");
                 } else {
                   bloc.musicList?.clear();
-                  music.addAll(state.data?.results ?? []);
+                  bloc.music?.addAll(state.data?.results ?? []);
                   bloc.add(OnLoadMusic(musicList: state.musicList));
                 }
               }
@@ -284,25 +283,25 @@ class MusicView extends StatelessWidget {
                 return Expanded(
                   child: SingleChildScrollView(
                     child: Column(
-                        children: List.generate(music.length ?? 0, (index) {
+                        children: List.generate(bloc.music?.length ?? 0, (index) {
                       return Column(
                         children: [
-                          if (music[index].previewUrl != null)
+                          if (bloc.music?[index].previewUrl != null)
                             _buildMusicList(
                                 index: index,
                                 bloc: bloc,
-                                music: music,
-                                image: music[index].image,
-                                title: music[index].trackName,
-                                singer: music[index].artistName,
-                                musicUrl: music[index].previewUrl),
-                          if (music[index].previewUrl != null &&
-                              index != (music.length ?? 0) - 1)
+                                music: bloc.music,
+                                image: bloc.music?[index].image,
+                                title: bloc.music?[index].trackName,
+                                singer: bloc.music?[index].artistName,
+                                musicUrl: bloc.music?[index].previewUrl),
+                          if (bloc.music?[index].previewUrl != null &&
+                              index != (bloc.music?.length ?? 0) - 1)
                             const Divider(
                               thickness: 1,
                               color: dividerColor,
                             ),
-                          if (index == (music.length ?? 0) - 1)
+                          if (index == (bloc.music?.length ?? 0) - 1)
                             const SizedBox(
                               height: 150,
                             )
@@ -406,7 +405,7 @@ class MusicView extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => MusicControllerPage(
                             bloc: bloc,
-                            music: music,
+                            music: bloc.music,
                             dto: MusicDTO(
                                 index: index,
                                 title: title,
@@ -416,7 +415,7 @@ class MusicView extends StatelessWidget {
                           )));
             } else {
               bloc.add(
-                  OnPlayMusic(index: index, currentMusic: music?[index ?? 0]));
+                  OnPlayMusic(index: index, currentMusic: bloc.music?[index ?? 0]));
             }
           },
           child: Padding(

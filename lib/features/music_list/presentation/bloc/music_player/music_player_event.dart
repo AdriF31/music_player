@@ -37,6 +37,7 @@ class OnSlideMusic extends MusicPlayerEvent{
   OnSlideMusic(this.position);
 }
 class OnPlaylistChange extends MusicPlayerEvent{
+
 }
 class OnListen extends MusicPlayerEvent{
 
