@@ -25,7 +25,7 @@ class MusicRemoteDataSourceImpl extends MusicRemoteDataSource {
       } else {
         throw ServerException();
       }
-    } on DioException catch(error){
+    } on DioException{
       throw ServerException();
     }
   }
