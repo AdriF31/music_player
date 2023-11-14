@@ -9,9 +9,8 @@ import 'package:music_player/features/music_list/data/data_sources/remote_data_s
 import 'package:music_player/features/music_list/data/models/music_model.dart';
 import 'package:music_player/features/music_list/domain/repositories/music_repository.dart';
 
-
-import '../../../../core/mock_network.dart';
 import '../../../../helpers/json_reader.dart';
+import 'package:music_player/di/injection.dart' as di;
 
 @GenerateMocks([
   MusicRepository,
@@ -19,8 +18,9 @@ import '../../../../helpers/json_reader.dart';
 void main() {
   late DioAdapter dioAdapter;
   late MusicRemoteDataSourceImpl musicRemoteDataSourceImpl;
-  setUp(() async {
-    setupLocatorForTests();
+  setUpAll(() async {
+    sl.reset();
+    di.init();
     dioAdapter = DioAdapter(dio: sl<Network>().dio);
     musicRemoteDataSourceImpl =
         MusicRemoteDataSourceImpl(network: sl<Network>());
